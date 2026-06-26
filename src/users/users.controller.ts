@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -13,5 +14,11 @@ export class UsersController {
         const { password, ...userWithoutPassword } = user;
 
         return userWithoutPassword
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('me')
+    getProfile(@Request() req: any){
+        return req.user;
     }
 }

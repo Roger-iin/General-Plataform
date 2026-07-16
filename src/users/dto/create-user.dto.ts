@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class CreateUserDto {
@@ -6,6 +7,7 @@ export class CreateUserDto {
     @IsNotEmpty({ message: 'O nome deve ser informado.'})
     name!: string;
 
+    @Transform(({ value }) => value.trim().toLowerCase())
     @IsEmail({}, { message: 'Forneça um email válido.'})
     @IsNotEmpty({message: 'O email deve ser informado.'})
     email!: string;

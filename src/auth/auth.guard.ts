@@ -2,6 +2,7 @@ import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/com
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
+import { AUTH_COOKIE_NAME } from "./auth.constants";
 
 @Injectable()
 export class AuthGuard {
@@ -12,7 +13,7 @@ export class AuthGuard {
 
     async canActivate(context: ExecutionContext): Promise<boolean>{
         const request = context.switchToHttp().getRequest();
-        const token = this.extractTokenFromHeader(request);
+        const token = this.extractTokenFromCookie(request);
         if(!token) {
             throw new UnauthorizedException('Token não encontrado.');
         }
@@ -29,8 +30,21 @@ export class AuthGuard {
         return true;
     }
 
-    private extractTokenFromHeader(request: Request): string | undefined {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token: undefined
+    private extractTokenFromCookie(request: Request): string | undefined {
+        const cookieHeader = request.headers.cookie;
+
+        if (!cookieHeader) {
+            return undefined;
+        }
+
+        for (const cookie of cookieHeader.split(';')) {
+            const [name, ...valueParts] = cookie.trim().split('=');
+
+            if (name === AUTH_COOKIE_NAME) {
+                return decodeURIComponent(valueParts.join('='));
+            }
+        }
+
+        return undefined;
     }
 }

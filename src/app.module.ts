@@ -13,11 +13,13 @@ import {
   getCredentialTracker,
   getIpTracker,
 } from './security/rate-limit.config';
+import { validateEnvironment } from './config/environment.validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnvironment,
     }),
     ThrottlerModule.forRoot([
       {
@@ -38,11 +40,11 @@ import {
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USER'),
-        password: configService.get<string>('DB_PASS'),
-        database: configService.get<string>('DB_NAME'),
+        host: configService.getOrThrow<string>('DB_HOST'),
+        port: configService.getOrThrow<number>('DB_PORT'),
+        username: configService.getOrThrow<string>('DB_USER'),
+        password: configService.getOrThrow<string>('DB_PASS'),
+        database: configService.getOrThrow<string>('DB_NAME'),
         entities: [User],
         migrations: [`${__dirname}/database/migrations/[0-9]*{.ts,.js}`],
         migrationsTableName: 'migrations',

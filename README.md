@@ -57,6 +57,38 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Database migrations
+
+The database schema is managed by TypeORM migrations. Automatic schema
+synchronization remains disabled.
+
+```bash
+# show migration status
+$ npm run migration:show
+
+# run pending migrations
+$ npm run migration:run
+
+# revert the latest migration
+$ npm run migration:revert
+
+# generate a migration after changing an entity
+$ npm run migration:generate -- src/database/migrations/MigrationName
+
+# create an empty migration
+$ npm run migration:create -- src/database/migrations/MigrationName
+```
+
+For a compiled production build, run:
+
+```bash
+$ npm run build
+$ npm run migration:run:prod
+```
+
+The migration commands load database credentials from `.env`. The PostgreSQL
+server must be running and the target database must already exist.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
